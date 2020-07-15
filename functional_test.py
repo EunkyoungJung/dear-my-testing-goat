@@ -32,6 +32,7 @@ class NewVisitorTest(unittest.TestCase):
         # webdriver manager를 추가로 설치해서 해결함
         # 참고한 스택오버플로우: "https://stackoverflow.com/questions/40208051/selenium-using-python-geckodriver-executable-needs-to-be-in-path"
         self.browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())
+        self.browser.implicitly_wait(3)
 
     def tearDown(self):
         self.browser.quit()

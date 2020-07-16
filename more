@@ -1,0 +1,58 @@
+diff --git a/lists/tests.py b/lists/tests.py
+index d3a3f2d..f2f68e9 100644
+--- a/lists/tests.py
++++ b/lists/tests.py
+@@ -1,7 +1,18 @@
++from django.urls import resolve
+ from django.test import TestCase
++from lists.views import home_page
++
+ 
+ # Create your tests here.
+ class SmokeTest(TestCase):
+ 
+     def test_bad_maths(self):
+-        self.assertEqual(1 + 1, 3)
++        self.assertEqual(1 + 1, 2)
++
++
++class HomePageTest(TestCase):
++
++    def test_root_url_resolves_to_home_page_view(self):
++        found = resolve('/')
++        self.assertEqual(found.func, home_page)
++
+diff --git a/lists/views.py b/lists/views.py
+index 91ea44a..4022aee 100644
+--- a/lists/views.py
++++ b/lists/views.py
+@@ -1,3 +1,5 @@
+ from django.shortcuts import render
+ 
+ # Create your views here.
++def home_page():
++    pass
+diff --git a/superlists/urls.py b/superlists/urls.py
+index 6dce4db..0d4234b 100644
+--- a/superlists/urls.py
++++ b/superlists/urls.py
+@@ -13,9 +13,17 @@ Including another URLconf
+     1. Import the include() function: from django.urls import include, path
+     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+ """
++
++from django.urls import include, path, re_path
+ from django.contrib import admin
+-from django.urls import path
++from lists.views import home_page
+ 
++# urlpatterns = [
++#     path('admin/', admin.site.urls),
++# ]
+ urlpatterns = [
+-    path('admin/', admin.site.urls),
++    # Examples:
++    re_path(r'^$', home_page, name='home'),
++    # re_path(r'^blog/', include('blog.urls')),
++    # re_path(r'^admin/', admin.site.urls),
+ ]

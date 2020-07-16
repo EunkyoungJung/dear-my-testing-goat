@@ -22,6 +22,7 @@
 
 from selenium import webdriver
 from webdriver_manager.firefox import GeckoDriverManager
+from selenium.webdriver.common.keys import Keys
 import unittest
 
 
@@ -46,17 +47,33 @@ class NewVisitorTest(unittest.TestCase):
         # assert 'To-Do' in browser.title, "Fail: No such title in browser"
         # assert 'To-Do' in browser.title, f"Browser title was {browser.title}"
         self.assertIn('To-Do', self.browser.title)
-        self.fail('Finish the test!')
+        header_text = self.browser.find_element_by_tag_name('h1').text
+        self.assertIn('To-Do', header_text)
 
         # (3) 그녀는 바로 작업을 추가하기로 한다.
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertEqual(inputbox.get_attribute('placeholder'), '작업 아이템 입력')
+
         # (4) "공작깃털 사기"라고 테스트를 상자에 입력한다.
+        inputbox.send_keys('공작깃털 사기')
+
         # (5) 엔터키를 치면 페이지가 갱신되고 작업 목록에 "1: 공작깃털 사기" 아이템이 추가된다.
+        inputbox.send_keys(Keys.ENTER)
+
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertTrue(
+            any(rows.text == "공작깃털 사기" for row in rows),
+            "신규 작업이 테이블에 표시되지 않는다."
+        )
+
         # (6) 추가 아이템을 입력할 수 있는 여분의 텍스트 상자가 존재한다.
         # (7) 다시 "공작깃털을 이용해서 그물 만들기"라고 입력한다.
         # (8) 페이지는 다시 갱신되고, 두 개 아이템이 목록에 보인다.
         # (9) 사이트는 그녀를 위한 특정 URL을 생성해 준다.
         # (10) 이때 URL에 대한 설명도 함께 제공된다.
         # (11) 해당 URL에 접속하면 그녀가 만든 작업 목록이 그대로 있는 것을 확인할 수 있다.
+        self.fail('Finish the test!')
 
 
 if __name__ == "__main__":

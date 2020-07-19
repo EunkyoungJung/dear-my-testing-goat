@@ -23,6 +23,11 @@
 from selenium import webdriver
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+# WebDriverWait는 Selenium 2.4.0 이후 부터 사용 가능합니다.
+from selenium.webdriver.support.ui import WebDriverWait
+# expected_conditions는 Selenium 2.26.0 이후 부터 사용 가능합니다.
+from selenium.webdriver.support import expected_conditions as EC
 import unittest
 
 
@@ -33,7 +38,7 @@ class NewVisitorTest(unittest.TestCase):
         # webdriver manager를 추가로 설치해서 해결함
         # 참고한 스택오버플로우: "https://stackoverflow.com/questions/40208051/selenium-using-python-geckodriver-executable-needs-to-be-in-path"
         self.browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())
-        self.browser.implicitly_wait(3)
+        self.browser.implicitly_wait(1000000)
 
     def tearDown(self):
         self.browser.quit()
@@ -41,6 +46,10 @@ class NewVisitorTest(unittest.TestCase):
     def test_can_start_a_list_and_retrieve_it_later(self):
         # (1) Marie는 멋진 작업 목록 온라인 앱이 나왔다는 소식을 듣고 해당 웹사이트를 확인하러 간다.
         self.browser.get('http://localhost:8000')
+        haha = WebDriverWait(self.browser, 10).until(
+            EC.presence_of_element_located((By.ID, "id_list_table"))
+        )
+        self.browser.implicitly_wait(10000)
 
         # (2) 웹 페이지 타이틀과 헤더가 'To-Do'를 표시하고 있다.
         # assert 'Django' in browser.title, "Fail"
@@ -49,19 +58,28 @@ class NewVisitorTest(unittest.TestCase):
         self.assertIn('To-Do', self.browser.title)
         header_text = self.browser.find_element_by_tag_name('h1').text
         self.assertIn('To-Do', header_text)
+        self.browser.implicitly_wait(10000)
 
         # (3) 그녀는 바로 작업을 추가하기로 한다.
         inputbox = self.browser.find_element_by_id('id_new_item')
+        haha = WebDriverWait(self.browser, 10).until(
+            EC.presence_of_element_located((By.TAG_NAME, "tr"))
+        )
+        self.browser.implicitly_wait(10000)
         self.assertEqual(inputbox.get_attribute('placeholder'), '작업 아이템 입력')
+        self.browser.implicitly_wait(10000)
 
         # (4) "공작깃털 사기"라고 테스트를 상자에 입력한다.
         inputbox.send_keys('공작깃털 사기')
+        self.browser.implicitly_wait(10000)
 
         # (5) 엔터키를 치면 페이지가 갱신되고 작업 목록에 "1: 공작깃털 사기" 아이템이 추가된다.
         inputbox.send_keys(Keys.ENTER)
-        self.browser.implicitly_wait(10)
+        haha = WebDriverWait(self.browser, 10).until(
+            EC.presence_of_element_located((By.TAG_NAME, "td"))
+        )
+        self.browser.implicitly_wait(10000)
         table = self.browser.find_element_by_id('id_list_table')
-        self.browser.implicitly_wait(10)
         rows = table.find_elements_by_tag_name('tr')
         # self.assertTrue(
         #     any(rows.text == "공작깃털 사기" for row in rows),
